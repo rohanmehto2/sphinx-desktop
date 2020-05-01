@@ -1,0 +1,19 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./dist",
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es5",
+        "lib": [
+            "es2018",
+            "dom"
+        ]
+    }
+}
