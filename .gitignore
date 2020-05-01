@@ -4,6 +4,8 @@
 /dist
 /tmp
 /out-tsc
+# compiled electron output
+/electron/dist
 # Only exists if Bazel was run
 /bazel-out
 
