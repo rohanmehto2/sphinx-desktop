@@ -7,6 +7,7 @@ import { IpcRenderer } from 'electron';
 })
 export class ConfigService {
   private ipc: IpcRenderer;
+  private config;
 
   constructor() {
     this.ipc = window.require('electron').ipcRenderer;
@@ -21,7 +22,7 @@ export class ConfigService {
     }
   }
 
-  async getConfig() {
+  private async getConfigIPC() {
     return new Promise<string[]>((resolve, reject) => {
       this.ipc.once('getConfigResponse', (event, arg) => {
         resolve(arg);
@@ -30,17 +31,24 @@ export class ConfigService {
     });
   }
 
-  // getEmail(): string {
-  //   return conf.get('sphinx.email');
-  // }
+  private async getConfigProperty(property: string): Promise<string> {
+    if (this.config == null) {
+      this.config = await this.getConfigIPC();
+    }
+    return this.config[property];
+  }
 
-  // getBaseApi(): string {
-  //   return conf.get('sphinx.baseApi');
-  // }
+  async getEmail(): Promise<string> {
+    return await this.getConfigProperty('email');
+  }
 
-  // getJwtPublicKey(): string {
-  //   return conf.get('sphinx.jwtPublicKey');
-  // }
+  async getBaseApi(): Promise<string> {
+    return await this.getConfigProperty('baseApi');
+  }
+
+  async getJwtPublicKey(): Promise<string> {
+    return await this.getConfigProperty('jwtPublicKey');
+  }
 
   // setEmail(email: string): void {
   //   conf.set('sphinx.email', email);
