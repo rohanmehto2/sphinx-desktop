@@ -56,3 +56,7 @@ ipcMain.on('getConfig', (event, arg) => {
     };
     win.webContents.send('getConfigResponse', config);
 });
+
+ipcMain.on('setConfig', (event, arg) => {
+    conf.set('sphinx', arg);
+});

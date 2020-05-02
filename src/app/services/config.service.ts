@@ -31,11 +31,29 @@ export class ConfigService {
     });
   }
 
+  private async setConfigIPC(config: any) {
+    return new Promise<string[]>((resolve, reject) => {
+      this.ipc.send('setConfig', config);
+      resolve(config);
+    });
+  }
+
   private async getConfigProperty(property: string): Promise<string> {
     if (this.config == null) {
       this.config = await this.getConfigIPC();
     }
     return this.config[property];
+  }
+
+  private async setConfigProperty(property: string, value: string): Promise<any> {
+    if (this.config == null) {
+      this.config = await this.getConfigIPC();
+    }
+    let config = this.config;
+    config[property] = value;
+    config = await this.setConfigIPC(config);
+    this.config = config;
+    return config[property];
   }
 
   async getEmail(): Promise<string> {
@@ -50,22 +68,25 @@ export class ConfigService {
     return await this.getConfigProperty('jwtPublicKey');
   }
 
-  // setEmail(email: string): void {
-  //   conf.set('sphinx.email', email);
-  // }
+  async setEmail(email: string): Promise<string> {
+    const updatedEmail = await this.setConfigProperty('email', email);
+    return updatedEmail;
+  }
 
-  // setBaseApi(api: string): void {
-  //   conf.set('sphinx.baseApi', api);
-  // }
+  async setBaseApi(api: string): Promise<string> {
+    const updatedApi = await this.setConfigProperty('baseApi', api);
+    return updatedApi;
+  }
 
-  // setJwtPublicKey(jwtPk: string): void {
-  //   conf.set('sphinx.jwtPublicKey', jwtPk);
-  // }
+  async setJwtPublicKey(jwtPk: string): Promise<void> {
+    const updatedJwtPk = await this.setConfigProperty('jwtPublicKey', jwtPk);
+    return updatedJwtPk;
+  }
 
-  // async isConfigured(): Promise<boolean> {
-  //   if (this.getBaseApi() == null) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
+  async isConfigured(): Promise<boolean> {
+    if (this.getBaseApi() == null) {
+      return false;
+    }
+    return true;
+  }
 }
