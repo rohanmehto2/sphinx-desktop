@@ -73,6 +73,10 @@ ipcMain.on('getKeychainSecret', async (event, arg) => {
 
 ipcMain.on('setKeychainSecret', async (event, arg) => {
     const keytarAccount = os.userInfo().username;
-    const secret = await keytar.setPassword(arg.name, keytarAccount, arg.value);
-    win.webContents.send('setKeychainSecretResponse', secret);
+    if (arg.value == null) {
+        await keytar.deletePassword(arg.name, keytarAccount);
+    } else {
+        await keytar.setPassword(arg.name, keytarAccount, arg.value);
+    }
+    win.webContents.send('setKeychainSecretResponse', arg.value);
 });

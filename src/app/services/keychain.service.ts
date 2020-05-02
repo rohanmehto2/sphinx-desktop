@@ -86,4 +86,36 @@ export class KeychainService {
     return await this.setKeychainSecretIPC(secret);
   }
 
+  async deleteAccessToken(): Promise<void> {
+    const secret = {
+      name: 'sphinxDesktopAccessToken',
+      value: null
+    };
+    await this.setKeychainSecretIPC(secret);
+  }
+
+  async deleteRefreshToken(): Promise<void> {
+    const secret = {
+      name: 'sphinxDesktopRefreshToken',
+      value: null
+    };
+    await this.setKeychainSecretIPC(secret);
+  }
+
+  async deleteKey(): Promise<void> {
+    const secret = {
+      name: 'sphinxDesktopKey',
+      value: null
+    };
+    await this.setKeychainSecretIPC(secret);
+  }
+
+  async deletePassphrase(): Promise<void> {
+    const secret = {
+      name: 'sphinxDesktopPassphrase',
+      value: null
+    };
+    await this.setKeychainSecretIPC(secret);
+  }
+
 }
