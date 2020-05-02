@@ -23,7 +23,7 @@ export class ConfigService {
   }
 
   private async getConfigIPC() {
-    return new Promise<string[]>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       this.ipc.once('getConfigResponse', (event, arg) => {
         resolve(arg);
       });
@@ -32,9 +32,11 @@ export class ConfigService {
   }
 
   private async setConfigIPC(config: any) {
-    return new Promise<string[]>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
+      this.ipc.once('setConfigResponse', (event, arg) => {
+        resolve(arg);
+      });
       this.ipc.send('setConfig', config);
-      resolve(config);
     });
   }
 
@@ -84,7 +86,7 @@ export class ConfigService {
   }
 
   async isConfigured(): Promise<boolean> {
-    if (this.getBaseApi() == null) {
+    if (await this.getBaseApi() == null) {
       return false;
     }
     return true;

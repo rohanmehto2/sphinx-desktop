@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ConfigService } from './services/config.service';
+import { KeychainService } from './services/keychain.service';
 
 
 @Component({
@@ -9,11 +10,11 @@ import { ConfigService } from './services/config.service';
 })
 export class AppComponent {
 
-  constructor(private conf: ConfigService) { }
+  constructor(private conf: ConfigService, private keychain: KeychainService) { }
 
   title = 'sphinx-desktop';
 
   async test() {
-    console.log('test');
+    // tests
   }
 }

@@ -5,6 +5,9 @@ import * as url from 'url';
 const Configstore = require('configstore');
 const conf = new Configstore('sphinx-cli');
 
+const keytar = require('keytar');
+const os = require('os');
+
 let win: BrowserWindow;
 
 function createWindow() {
@@ -59,4 +62,17 @@ ipcMain.on('getConfig', (event, arg) => {
 
 ipcMain.on('setConfig', (event, arg) => {
     conf.set('sphinx', arg);
+    win.webContents.send('setConfigResponse', arg);
+});
+
+ipcMain.on('getKeychainSecret', async (event, arg) => {
+    const keytarAccount = os.userInfo().username;
+    const secret = await keytar.getPassword(arg, keytarAccount);
+    win.webContents.send('getKeychainSecretResponse', secret);
+});
+
+ipcMain.on('setKeychainSecret', async (event, arg) => {
+    const keytarAccount = os.userInfo().username;
+    const secret = await keytar.setPassword(arg.name, keytarAccount, arg.value);
+    win.webContents.send('setKeychainSecretResponse', secret);
 });
