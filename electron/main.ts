@@ -14,7 +14,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 800,
         height: 600,
-        backgroundColor: '#312450',
+        backgroundColor: '#FBFBF0',
         webPreferences: {
             nodeIntegration: true
         }
