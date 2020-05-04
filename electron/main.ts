@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { verify } from 'jsonwebtoken';
 import * as path from 'path';
 import * as url from 'url';
 
@@ -80,3 +81,17 @@ ipcMain.on('setKeychainSecret', async (event, arg) => {
     }
     win.webContents.send('setKeychainSecretResponse', arg.value);
 });
+
+ipcMain.on('verifyToken', async (event, arg) => {
+    try {
+        await verify(arg.token, arg.publicKey);
+        win.webContents.send('verifyTokenResponse', 'OK');
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            win.webContents.send('verifyTokenResponse', 'EXPIRED');
+        } else {
+            win.webContents.send('verifyTokenResponse', 'INVALID');
+        }
+    }
+});
+

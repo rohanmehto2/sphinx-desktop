@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/services/auth.service';
+import { ConfigService } from 'src/app/services/config.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -9,24 +12,46 @@ import { FormBuilder, Validators } from '@angular/forms';
 })
 export class LoginComponent implements OnInit {
   loginForm;
+  loading = false;
+  submitted = false;
+  returnUrl: string;
+  error: string;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private injector: Injector) {
     this.loginForm = this.formBuilder.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
     });
   }
 
-  ngOnInit(): void {
+  private authService = this.injector.get(AuthService);
+  private configService = this.injector.get(ConfigService);
+
+  async ngOnInit() {
+    if (await this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
   }
 
-  get email() { return this.loginForm.get('email'); }
+  get f() { return this.loginForm.controls; }
 
-  get password() { return this.loginForm.get('password'); }
+  async onSubmit(credentials) {
+    this.submitted = true;
 
-  onSubmit(loginData) {
-    console.log(loginData);
-    this.loginForm.reset();
+    if (this.loginForm.invalid) {
+      return;
+    }
+    console.log(credentials);
+    // this.loginForm.reset();
+    this.loading = true;
+    const success = await this.authService.login(credentials);
+    if (!success) {
+      this.loading = false;
+      this.error = 'Invalid credentials';
+      return;
+    }
+    await this.configService.setEmail(credentials.email);
+    this.router.navigate(['/home']);
   }
 
 }

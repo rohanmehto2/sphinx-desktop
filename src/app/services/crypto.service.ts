@@ -1,7 +1,9 @@
 import { Injectable, Injector } from '@angular/core';
 import { KeychainService } from './keychain.service';
-const openpgp = require('openpgp');
-const password = require('secure-random-password');
+// const openpgp = require('openpgp');
+// const password = require('secure-random-password');
+import * as openpgp from 'openpgp';
+import * as password from 'secure-random-password';
 
 @Injectable({
   providedIn: 'root'

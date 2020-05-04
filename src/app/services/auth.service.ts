@@ -1,17 +1,29 @@
 import { Injectable, Injector } from '@angular/core';
+import { IpcRenderer } from 'electron';
 import { RestService } from './rest.service';
 import { ConfigService } from './config.service';
 import { UserService } from './user.service';
 import { CryptoService } from './crypto.service';
 import { KeychainService } from './keychain.service';
-import { verify } from 'jsonwebtoken';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private ipc: IpcRenderer;
 
-  constructor(private injector: Injector) { }
+  constructor(private injector: Injector) {
+    this.ipc = window.require('electron').ipcRenderer;
+    if ((window as any).require) {
+      try {
+        this.ipc = (window as any).require('electron').ipcRenderer;
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      console.warn('Could not load electron ipc');
+    }
+  }
 
   private restService = this.injector.get(RestService);
   private configService = this.injector.get(ConfigService);
@@ -86,18 +98,21 @@ export class AuthService {
       }
       const publicKey = Buffer.from(await this.configService.getJwtPublicKey(), 'utf8');
       const accessToken = await this.getAccessToken();
-      const payload = await verify(accessToken, publicKey);
-      return true;
-    } catch (err) {
-      if (err.name == 'TokenExpiredError') {
+      const tokenStatus = await this.verifyTokenIPC(accessToken, publicKey);
+      if (tokenStatus === 'EXPIRED') {
         const tokenUpdated = await this.fetchAccessToken();
         if (!tokenUpdated) {
           return false;
         }
         return await this.isLoggedIn();
       }
-      console.log('NOT_LOGGED_IN');
-      return false;
+      if (tokenStatus === 'OK') {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -111,5 +126,18 @@ export class AuthService {
     } catch (err) {
       return false;
     }
+  }
+
+  private async verifyTokenIPC(token: string, publicKey: Buffer) {
+    const tokenPayload = {
+      token,
+      publicKey
+    };
+    return new Promise<string>((resolve, reject) => {
+      this.ipc.once('verifyTokenResponse', (event, arg) => {
+        resolve(arg);
+      });
+      this.ipc.send('verifyToken', tokenPayload);
+    });
   }
 }
