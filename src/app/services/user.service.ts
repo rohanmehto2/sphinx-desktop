@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { RestService } from './rest.service';
 import { ConfigService } from './config.service';
-import { CryptoService } from './crypto.service';
+// import { CryptoService } from './crypto.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class UserService {
 
   private restService = this.injector.get(RestService);
   private configService = this.injector.get(ConfigService);
-  private cryptoService = this.injector.get(CryptoService);
+  // private cryptoService = this.injector.get(CryptoService);
 
   async listUsers(): Promise<any> {
     const users = await this.restService.httpGet('/member');
@@ -38,17 +38,17 @@ export class UserService {
     return true;
   }
 
-  async setUpKeys(): Promise<void> {
-    const user = await this.getUserInfo();
-    const publicKey = await this.cryptoService.generateKeyPair(user.name, user.email);
-    await this.restService.httpPut('/member', user.email, { publicKey });
-  }
+  // async setUpKeys(): Promise<void> {
+  //   const user = await this.getUserInfo();
+  //   const publicKey = await this.cryptoService.generateKeyPair(user.name, user.email);
+  //   await this.restService.httpPut('/member', user.email, { publicKey });
+  // }
 
-  async cleanUpKeys(): Promise<void> {
-    const user = await this.getUserInfo();
-    await this.cryptoService.deleteKeyPair();
-    await this.restService.httpPut('/member', user.email, { publicKey: null });
-  }
+  // async cleanUpKeys(): Promise<void> {
+  //   const user = await this.getUserInfo();
+  //   await this.cryptoService.deleteKeyPair();
+  //   await this.restService.httpPut('/member', user.email, { publicKey: null });
+  // }
 
   async getPublicKeyByEmail(email: string): Promise<string> {
     const user = await this.restService.httpGet('/member', email);

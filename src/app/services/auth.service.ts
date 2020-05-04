@@ -3,7 +3,7 @@ import { IpcRenderer } from 'electron';
 import { RestService } from './rest.service';
 import { ConfigService } from './config.service';
 import { UserService } from './user.service';
-import { CryptoService } from './crypto.service';
+// import { CryptoService } from './crypto.service';
 import { KeychainService } from './keychain.service';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class AuthService {
 
   private restService = this.injector.get(RestService);
   private configService = this.injector.get(ConfigService);
-  private cryptoService = this.injector.get(CryptoService);
+  // private cryptoService = this.injector.get(CryptoService);
   private userService = this.injector.get(UserService);
   private keychainService = this.injector.get(KeychainService);
 
@@ -37,16 +37,16 @@ export class AuthService {
     await this.configService.setJwtPublicKey(tokens.jwtPublicKey);
     await this.setRefreshToken(tokens.refreshToken);
     await this.setAccessToken(tokens.accessToken);
-    if (!(await this.cryptoService.keyExists())) {
-      await this.userService.setUpKeys();
-    }
+    // if (!(await this.cryptoService.keyExists())) {
+    //   await this.userService.setUpKeys();
+    // }
     return true;
   }
 
   async logout(): Promise<void> {
     const refreshToken = await this.getRefreshToken();
     await this.restService.httpPost('/logout', { refreshToken });
-    await this.userService.cleanUpKeys();
+    // await this.userService.cleanUpKeys();
     await this.deleteRefreshToken();
     await this.deleteAccessToken();
   }
