@@ -27,10 +27,8 @@ export class LoginComponent implements OnInit {
   private authService = this.injector.get(AuthService);
   private configService = this.injector.get(ConfigService);
 
-  async ngOnInit() {
-    if (await this.authService.isLoggedIn()) {
-      this.router.navigate(['/home']);
-    }
+  ngOnInit() {
+
   }
 
   get f() { return this.loginForm.controls; }

@@ -13,6 +13,7 @@ let win: BrowserWindow;
 
 function createWindow() {
     win = new BrowserWindow({
+        titleBarStyle: 'hidden',
         width: 800,
         height: 600,
         backgroundColor: '#FBFBF0',
@@ -84,13 +85,20 @@ ipcMain.on('setKeychainSecret', async (event, arg) => {
 
 ipcMain.on('verifyToken', async (event, arg) => {
     try {
-        await verify(arg.token, arg.publicKey);
-        win.webContents.send('verifyTokenResponse', 'OK');
+        const keytarAccount = os.userInfo().username;
+        const accessToken = await keytar.getPassword('sphinxDesktopAccessToken', keytarAccount);
+        if (accessToken == null) {
+            win.webContents.send('verifyTokenResponse', 'NULL');
+        } else {
+            const pk = Buffer.from(conf.get('sphinx.jwtPublicKey'));
+            await verify(accessToken, pk);
+            win.webContents.send('verifyTokenResponse', 'OK');
+        }
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
             win.webContents.send('verifyTokenResponse', 'EXPIRED');
         } else {
-            win.webContents.send('verifyTokenResponse', 'INVALID');
+            win.webContents.send('verifyTokenResponse', err);
         }
     }
 });

@@ -11,15 +11,15 @@ export class RestService {
 
   config = this.injector.get(ConfigService);
   // authService = this.injector.get(AuthService);
-  baseApi = this.config.getBaseApi();
 
   async httpGet(url: string, path: string = '', args: any = {}): Promise<any> {
     try {
+      const baseApi = await this.config.getBaseApi();
       // const accessToken = await this.authService.getAccessToken();
       // args.headers = {
       //   'Authorization': `Bearer ${accessToken}`
       // };
-      url = `${this.baseApi}${url}/${path}`;
+      url = `${baseApi}${url}/${path}`;
       const res = await axios.default.get(url, args);
       return res.data;
     } catch (err) {
@@ -29,11 +29,12 @@ export class RestService {
 
   async httpPost(url: string, data: object, args: any = {}): Promise<any> {
     try {
+      const baseApi = await this.config.getBaseApi();
       // const accessToken = await this.authService.getAccessToken();
       // args.headers = {
       //   'Authorization': `Bearer ${accessToken}`
       // };
-      url = `${this.baseApi}${url}`;
+      url = `${baseApi}${url}`;
       const res = await axios.default.post(url, data, args);
       return res.data;
     } catch (err) {
@@ -43,11 +44,12 @@ export class RestService {
 
   async httpPut(url: string, path: string = '', data: object, args: any = {}): Promise<any> {
     try {
+      const baseApi = await this.config.getBaseApi();
       // const accessToken = await this.authService.getAccessToken();
       // args.headers = {
       //   'Authorization': `Bearer ${accessToken}`
       // };
-      url = `${this.baseApi}${url}/${path}`;
+      url = `${baseApi}${url}/${path}`;
       const res = await axios.default.put(url, data, args);
       return res.data;
     } catch (err) {

@@ -1,6 +1,6 @@
 <img class="img-center" src="assets/img/sphinx_logo.png">
 <div class="center">
-    <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+    <div *ngIf="error" class="center">{{error}}</div>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)">
         <div class="form-group">
             <label>Email</label>

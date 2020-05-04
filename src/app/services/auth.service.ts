@@ -92,13 +92,11 @@ export class AuthService {
 
   async isLoggedIn(): Promise<boolean> {
     try {
-      if (await this.getAccessToken() == null) {
+      const tokenStatus = await this.verifyTokenIPC();
+      if (tokenStatus === 'NULL') {
         console.log('LOGIN_REQ');
         return false;
       }
-      const publicKey = Buffer.from(await this.configService.getJwtPublicKey(), 'utf8');
-      const accessToken = await this.getAccessToken();
-      const tokenStatus = await this.verifyTokenIPC(accessToken, publicKey);
       if (tokenStatus === 'EXPIRED') {
         const tokenUpdated = await this.fetchAccessToken();
         if (!tokenUpdated) {
@@ -128,16 +126,12 @@ export class AuthService {
     }
   }
 
-  private async verifyTokenIPC(token: string, publicKey: Buffer) {
-    const tokenPayload = {
-      token,
-      publicKey
-    };
+  private async verifyTokenIPC(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.ipc.once('verifyTokenResponse', (event, arg) => {
         resolve(arg);
       });
-      this.ipc.send('verifyToken', tokenPayload);
+      this.ipc.send('verifyToken');
     });
   }
 }
